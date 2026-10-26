@@ -1,0 +1,24 @@
+id = "debug_screen"
+priority = 10
+
+sc_file_source = "ClientFile"
+sc_file = "sc/effects_brawler_stella.sc"
+container_prefix = "debug_screen_"
+
+[buttons]
+weapon_left = {parent_binding="bottom_left_container", path="weapon"}
+
+[[set_text]]
+path="left/toggle_menu_button/txt"
+text = "D"
+
+[animation]
+menu_show = {parent_binding="top_right", path="debug_menu", start="anim_in", end="anim_idle"}
+menu_hide = {parent_binding="top_right", path="debug_menu", start="anim_idle", end="anim_out"}
+menu_idle = {parent_binding="top_right", path="debug_menu", end="anim_end" }
+
+default_animation = "idle_all"
+idle_all = {path="", also_play=["menu_idle"]}
+
+[bindings]
+bottom_left_container = { path="bottom_left" }

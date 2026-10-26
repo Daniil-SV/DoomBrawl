@@ -1,0 +1,107 @@
+id = "debug_menu"
+priority = 10
+
+sc_file_source = "ClientFile"
+sc_file = "sc/effects_brawler_stella.sc"
+container_top_right = "debug_menu"
+
+interactive = [""]
+
+[buttons]
+close_button = {parent_binding="menu_container", path="close_button"}
+
+# Pagination buttons
+next_page = {parent_binding="menu_container", path="next_page_button"}
+last_page = {parent_binding="menu_container", path="last_page_button"}
+
+# Buttons bindings
+# Always used with parent_binding
+button_1 = {parent_binding="button_container", path="ph_1"}
+button_2 = {parent_binding="button_container", path="ph_2"}
+button_3 = {parent_binding="button_container", path="ph_3"}
+button_4 = {parent_binding="button_container", path="ph_4"}
+button_5 = {parent_binding="button_container", path="ph_5"}
+button_6 = {parent_binding="button_container", path="ph_6"}
+button_7 = {parent_binding="button_container", path="ph_7"}
+button_8 = {parent_binding="button_container", path="ph_8"}
+button_9 = {parent_binding="button_container", path="ph_9"}
+button_10 = {parent_binding="button_container", path="ph_10"}
+
+[animations]
+
+# Menu animations
+show = { parent_binding="self", path="", start="ani_in", end="ani_idle"}
+hide = { parent_binding="self", path="", start="ani_out", end="ani_end"}
+stop = { parent_binding="self", path="", end="ani_in", also_play=["button_0"] }
+
+# Buttons transition animations
+button_0_1 = { binding="button_container", start="button_0", end="button_1"}
+button_1_2 = { binding="button_container", start="button_1", end="button_2"}
+button_2_3 = { binding="button_container", start="button_2", end="button_3"}
+button_3_4 = { binding="button_container", start="button_3", end="button_4"}
+button_4_5 = { binding="button_container", start="button_4", end="button_5"}
+button_5_6 = { binding="button_container", start="button_5", end="button_6"}
+button_6_7 = { binding="button_container", start="button_6", end="button_7"}
+button_7_8 = { binding="button_container", start="button_7", end="button_8"}
+button_8_9 = { binding="button_container", start="button_8", end="button_9"}
+button_9_10 = { binding="button_container", start="button_9", end="button_10"}
+
+# Buttons count states
+button_0 = {binding="button_container", start="button_0", end="button_0"}
+button_1 = {binding="button_container", start="button_0", end="button_1"}
+button_2 = {binding="button_container", start="button_0", end="button_2"}
+button_3 = {binding="button_container", start="button_0", end="button_3"}
+button_4 = {binding="button_container", start="button_0", end="button_4"}
+button_5 = {binding="button_container", start="button_0", end="button_5"}
+button_6 = {binding="button_container", start="button_0", end="button_6"}
+button_7 = {binding="button_container", start="button_0", end="button_7"}
+button_8 = {binding="button_container", start="button_0", end="button_8"}
+button_9 = {binding="button_container", start="button_0", end="button_9"}
+button_10 = {binding="button_container", start="button_0", end="button_10"}
+
+default_animation = "stop"
+
+[[set_text]]
+binding = "search_help_txt"
+text = "click to search..."
+
+[bindings]
+self = "top_right"
+menu_container = {parent_binding="self", path="menu"}
+button_container = {parent_binding="menu_container", path="buttons"}
+
+# Header
+title_txt = {parent_binding="menu_container", path="title"}
+version_txt = {parent_binding="menu_container", path="version"}
+search_help_txt = {parent_binding="menu_container", path="search_help"}
+
+# Buttons
+button_1 = {parent_binding="button_container", path="ph_1"}
+button_2 = {parent_binding="button_container", path="ph_2"}
+button_3 = {parent_binding="button_container", path="ph_3"}
+button_4 = {parent_binding="button_container", path="ph_4"}
+button_5 = {parent_binding="button_container", path="ph_5"}
+button_6 = {parent_binding="button_container", path="ph_6"}
+button_7 = {parent_binding="button_container", path="ph_7"}
+button_8 = {parent_binding="button_container", path="ph_8"}
+button_9 = {parent_binding="button_container", path="ph_9"}
+button_10 = {parent_binding="button_container", path="ph_10"}
+
+# Buttons text accessor
+button_1_txt = {parent_binding="button_1", path="Text"}
+button_2_txt = {parent_binding="button_2", path="Text"}
+button_3_txt = {parent_binding="button_3", path="Text"}
+button_4_txt = {parent_binding="button_4", path="Text"}
+button_5_txt = {parent_binding="button_5", path="Text"}
+button_6_txt = {parent_binding="button_6", path="Text"}
+button_7_txt = {parent_binding="button_7", path="Text"}
+button_8_txt = {parent_binding="button_8", path="Text"}
+button_9_txt = {parent_binding="button_9", path="Text"}
+button_10_txt = {parent_binding="button_10", path="Text"}
+
+# [[replace]]
+# binding ="button_5"
+# sc_file_source = "ClientFile"
+# sc_file="sc/ui.sc"
+# export_name="icon_modifier_48"
+

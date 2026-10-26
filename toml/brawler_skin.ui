@@ -1,0 +1,13 @@
+id = "brawler_skin"
+priority = 1
+
+sc_file_source = "ClientFile"
+sc_file = "sc/shop.sc"
+export_name = "offer_item_brawler_big"
+
+hide=[ "brawler_level", ]
+[bindings]
+hero_area = { path="hero_area" }
+
+[skins]
+skin_area = { binding="hero_area", skin="CactusDefault", scale = 3, rotation = 0, position=[0,0,0], offset=[0,0] }

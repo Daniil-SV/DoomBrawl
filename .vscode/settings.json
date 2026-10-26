@@ -1,0 +1,10 @@
+{
+    "js/ts.experimental.useTsgo": false,
+    "files.associations": {
+        "*.ui": "toml"
+    },
+    "toml.schema.associations": {
+        "*.ui": "https://ext.nulls.gg/mods/schema/ui.schema.json",
+        "**/*.ui": "https://ext.nulls.gg/mods/schema/ui.schema.json"
+    }
+}

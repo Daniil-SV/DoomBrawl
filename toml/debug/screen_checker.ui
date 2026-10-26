@@ -1,0 +1,6 @@
+id = "debug_checker"
+priority = 1
+
+sc_file_source = "ClientFile"
+sc_file = "sc/effects_brawler_stella.sc"
+export_name = "screen_checker"

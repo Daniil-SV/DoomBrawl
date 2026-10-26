@@ -1,0 +1,13 @@
+id = "debug_toggle"
+priority = 10
+
+sc_file_source = "ClientFile"
+sc_file = "sc/effects_brawler_stella.sc"
+export_name = "debug_button"
+
+[[set_text]]
+path="txt"
+text = "D"
+
+[buttons]
+self = ""

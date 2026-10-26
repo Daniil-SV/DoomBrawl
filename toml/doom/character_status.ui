@@ -1,0 +1,25 @@
+id = "doom_character_bottom_status"
+priority = 1
+
+type = "UiWidget"
+subtype = "GenericHeroArea"
+
+sc_file_source = "ClientFile"
+sc_file = "sc/effects_brawler_stella.sc"
+export_name = "doom_char_status"
+
+move = [{ path = "hero_area", offset = [0, 100] }]
+
+hide_binding = ["hero_ph"]
+
+hide = ["brawler_level"]
+
+[bindings]
+hero_ph = { path = "hero_area/hero_ph" }
+# title = { path = "info_title" }
+# subtitle = { path = "info_subtitle" }
+
+[skins]
+skin = { binding = "hero_ph", skin="EnragerDefault", animation = "HAPPY", animation_next = "HAPPY_LOOP", scale = 3, rotation = 0, position=[0,0,0], offset=[0,0]  }
+
+

@@ -1,0 +1,39 @@
+{
+  "name": "DoomBrawl",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "pnpm transpile && pnpm optimize",
+    "build:dev": "pnpx cross-env DEBUG=true pnpm build",
+    "transpile": "pnpx typescript-to-lua",
+    "optimize": "darklua process dist/doomBrawl.luau dist/doomBrawlOptimized.luau",
+    "dev": "pnpx typescript-to-lua --watch",
+    "lint": "biome check --fix --unsafe",
+    "validate:toml": "node scripts/validate_toml.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.15.0",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.15.0",
+  "type": "module",
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.2",
+    "@typescript-to-lua/language-extensions": "^1.19.0",
+    "ajv": "^8.20.0",
+    "lua-types": "^2.14.1",
+    "smol-toml": "^1.9.1",
+    "typescript": "^6.0.3",
+    "typescript-to-lua": "^1.37.1"
+  },
+  "dependencies": {
+    "@gwigz/tstl-bundle-flatten": "^1.4.0"
+  }
+}

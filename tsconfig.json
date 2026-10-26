@@ -1,0 +1,34 @@
+{
+    "$schema": "https://raw.githubusercontent.com/TypeScriptToLua/TypeScriptToLua/master/tsconfig-schema.json",
+    "compilerOptions": {
+        "ignoreDeprecations": "6.0",
+        "target": "ESNext",
+        "lib": [
+            "ESNext"
+        ],
+        "moduleResolution": "node",
+        "types": [
+            "lua-types/5.2",
+            "@typescript-to-lua/language-extensions"
+        ],
+        "strict": true,
+        "skipLibCheck": true,
+        "resolveJsonModule": true
+    },
+    "tstl": {
+        "luaTarget": "Luau",
+        "luaBundleEntry": "src/main.ts",
+        "luaBundle": "dist/doomBrawl.luau",
+        "luaLibImport": "require-minimal",
+        "luaPlugins": [
+            {
+                "name": "@gwigz/tstl-bundle-flatten"
+            }
+        ],
+        "noImplicitSelf": true
+    },
+    "include": [
+        "src/**/*.ts",
+        "types/**/*.ts"
+    ]
+}

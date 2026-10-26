@@ -1,0 +1,6 @@
+id = "debug_menu_item"
+priority = 10
+
+sc_file_source = "ClientFile"
+sc_file = "sc/effects_brawler_stella.sc"
+container_top_right = "debug_menu_item"

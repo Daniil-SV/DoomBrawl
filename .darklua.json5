@@ -1,0 +1,47 @@
+{
+    "generator": { name: "dense", column_span: 1024 },
+    "lua_extension": "luau",
+    "bundle": {
+        "require_mode": {
+            "name": "luau",
+            "use_luau_configuration": true
+        }
+    },
+    "rules": [
+        {
+            "rule": "inject_global_value",
+            "identifier": "DEBUG",
+            "env": "DEBUG",
+            "default_value": false
+        },
+        "compute_expression",
+        "remove_unused_if_branch",
+        "remove_types",
+        "remove_spaces",
+        "remove_comments",
+        "remove_empty_do",
+        "remove_unused_while",
+        "filter_after_early_return",
+        "remove_unused_variable",
+        "remove_method_definition",
+        "convert_index_to_field",
+        "remove_nil_declaration",
+        "remove_function_call_parens",
+        {
+            "rule": "rename_variables",
+            "include_functions": true,
+            "detect_globals": true,
+            "globals": [
+                "tick",
+                "server",
+                "json",
+                "lookup",
+                "createObject",
+                "createCallback",
+                "log",
+                "event",
+                "scheduleTasks"
+            ]
+        }
+    ]
+}
