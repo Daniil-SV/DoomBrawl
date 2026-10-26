@@ -2,8 +2,8 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { parse } from "smol-toml";
 import Ajv2020 from "ajv/dist/2020.js";
+import { parse } from "smol-toml";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uiDir = path.resolve(__dirname, "../toml");
@@ -272,7 +272,7 @@ function formatSourceSnippet(sourceInfo, location, context = 1) {
 	return result;
 }
 
-function formatAjvError(error, file, data, sourceInfo) {
+function formatAjvError(error, file, sourceInfo) {
 	const details = [];
 	const relativeFile = path.relative(process.cwd(), file);
 	const location = locateError(error, sourceInfo);
@@ -287,9 +287,11 @@ function formatAjvError(error, file, data, sourceInfo) {
 	details.push(`  Rule: ${error.keyword}`);
 	details.push(`  Message: ${error.message ?? "Validation failed"}`);
 
-	// Preserve all Ajv parameters, including allowedValues and
-	// additionalProperty / unevaluatedProperty / missingProperty.
-	if (error.params && Object.keys(error.params).length) {
+	if (error.keyword === "reference") {
+		details.push(`  Reference: ${error.params.kind}`);
+	} else if (error.params && Object.keys(error.params).length) {
+		// Preserve all Ajv parameters, including allowedValues and
+		// additionalProperty / unevaluatedProperty / missingProperty.
 		details.push(`  Parameters: ${JSON.stringify(error.params)}`);
 	}
 
@@ -377,6 +379,338 @@ function formatParseError(error, file, sourceInfo) {
 	return lines.join("\n");
 }
 
+// Game assets are indexed as reference material so project configs can inherit
+// bindings, animations and other configs that live in the shipped files.
+const referenceDirs = [uiDir, path.resolve(__dirname, "../assets/toml")];
+
+async function findUiFilesSafe(dir) {
+	try {
+		return await findUiFiles(dir);
+	} catch (error) {
+		if (error?.code === "ENOENT") return [];
+		throw error;
+	}
+}
+
+function indexConfigs(documents) {
+	const index = new Map();
+
+	for (const document of documents) {
+		const id = document.data?.id;
+
+		if (typeof id !== "string" || index.has(id)) continue;
+
+		index.set(id, document);
+	}
+
+	return index;
+}
+
+async function loadReferenceDocuments() {
+	const files = [];
+	const seen = new Set();
+
+	for (const dir of referenceDirs) {
+		files.push(...(await findUiFilesSafe(dir)).sort());
+	}
+
+	const documents = [];
+
+	for (const file of files) {
+		if (seen.has(file)) continue;
+
+		seen.add(file);
+
+		try {
+			documents.push({ file, data: parse(await readFile(file, "utf8")) });
+		} catch {
+			// Assets shipped with the game may use extensions that smol-toml
+			// does not understand. They are only used as reference material.
+		}
+	}
+
+	return documents;
+}
+
+function getContainerAnchors(schema) {
+	const properties = schema?.definitions?.container?.properties ?? {};
+	const anchors = new Set(["self"]);
+
+	for (const key of Object.keys(properties)) {
+		if (key.startsWith("container_") && key !== "container_prefix") {
+			anchors.add(key.slice("container_".length));
+		}
+	}
+
+	return anchors;
+}
+
+function getInheritanceEdges(data) {
+	const edges = [];
+	const copyConfigs = data.copy_configs;
+
+	if (typeof copyConfigs === "string") {
+		edges.push({ id: copyConfigs, path: "/copy_configs" });
+	} else if (Array.isArray(copyConfigs)) {
+		copyConfigs.forEach((id, index) => {
+			if (typeof id === "string") {
+				edges.push({ id, path: `/copy_configs/${index}` });
+			}
+		});
+	}
+
+	if (data.sc_file_source === "OtherTomlConfig") {
+		if (typeof data.other_toml_config === "string") {
+			edges.push({ id: data.other_toml_config, path: "/other_toml_config" });
+		}
+
+		if (typeof data.sc_file === "string") {
+			edges.push({ id: data.sc_file, path: "/sc_file" });
+		}
+	}
+
+	return edges;
+}
+
+function collectBindingNames(data, names) {
+	for (const section of ["bindings", "buttons"]) {
+		const table = data[section];
+
+		if (!table || typeof table !== "object" || Array.isArray(table)) continue;
+
+		for (const name of Object.keys(table)) names.add(name);
+	}
+}
+
+function collectAnimationNames(data, names) {
+	for (const section of ["animation", "animations"]) {
+		const table = data[section];
+
+		if (!table || typeof table !== "object" || Array.isArray(table)) continue;
+
+		for (const name of Object.keys(table)) {
+			if (name !== "default_animation") names.add(name);
+		}
+	}
+}
+
+function resolveInheritance(data, configIndex, anchors) {
+	const bindings = new Set(anchors);
+	const animations = new Set();
+	const cycles = [];
+	const visiting = new Set();
+	const visited = new Set();
+
+	function visit(document, stack) {
+		if (visited.has(document)) return;
+
+		if (visiting.has(document)) {
+			const start = stack.indexOf(document);
+			cycles.push([...stack.slice(start), document].map((item) => item.data?.id ?? "<unknown>"));
+			return;
+		}
+
+		visiting.add(document);
+
+		for (const edge of getInheritanceEdges(document.data)) {
+			const inherited = configIndex.get(edge.id);
+
+			if (inherited) visit(inherited, [...stack, document]);
+		}
+
+		visiting.delete(document);
+		visited.add(document);
+
+		collectBindingNames(document.data, bindings);
+		collectAnimationNames(document.data, animations);
+	}
+
+	visit({ file: null, data }, []);
+
+	return { bindings, animations, cycles };
+}
+
+function levenshtein(a, b) {
+	const previous = Array.from({ length: b.length + 1 }, (_, index) => index);
+	const current = new Array(b.length + 1);
+
+	for (let i = 1; i <= a.length; i++) {
+		current[0] = i;
+
+		for (let j = 1; j <= b.length; j++) {
+			const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+
+			current[j] = Math.min(
+				previous[j] + 1,
+				current[j - 1] + 1,
+				previous[j - 1] + cost,
+			);
+		}
+
+		for (let j = 0; j <= b.length; j++) previous[j] = current[j];
+	}
+
+	return previous[b.length];
+}
+
+function suggestName(name, candidates) {
+	const normalized = name.toLowerCase();
+	const limit = Math.max(1, Math.min(3, Math.floor(name.length / 3) + 1));
+	let best;
+	let bestDistance = Number.POSITIVE_INFINITY;
+
+	for (const candidate of candidates) {
+		const distance = levenshtein(normalized, candidate.toLowerCase());
+
+		if (distance < bestDistance) {
+			best = candidate;
+			bestDistance = distance;
+		}
+	}
+
+	return bestDistance <= limit ? best : undefined;
+}
+
+function buildReferenceError(instancePath, kind, name, suggestion) {
+	const message = suggestion
+		? `Unknown ${kind} "${name}". Did you mean "${suggestion}"?`
+		: `Unknown ${kind} "${name}".`;
+
+	return {
+		instancePath,
+		keyword: "reference",
+		message,
+		params: { kind, name, ...(suggestion ? { suggestion } : {}) },
+	};
+}
+
+function validateReferences(data, configIndex, anchors) {
+	const errors = [];
+	const { bindings, animations, cycles } = resolveInheritance(data, configIndex, anchors);
+	const pointerFor = (parts) =>
+		`/${parts.map((part) => escapePointerPart(String(part))).join("/")}`;
+
+	const checkBinding = (name, instancePath) => {
+		if (typeof name !== "string" || bindings.has(name)) return;
+
+		errors.push(buildReferenceError(instancePath, "binding", name, suggestName(name, bindings)));
+	};
+
+	const checkAnimation = (name, instancePath) => {
+		if (typeof name !== "string" || animations.has(name)) return;
+
+		errors.push(
+			buildReferenceError(instancePath, "animation", name, suggestName(name, animations)),
+		);
+	};
+
+	const checkAnimationValue = (value, instancePath) => {
+		if (typeof value === "string") {
+			checkAnimation(value, instancePath);
+		} else if (Array.isArray(value)) {
+			value.forEach((name, index) => {
+				if (typeof name === "string") {
+					checkAnimation(name, `${instancePath}/${index}`);
+				}
+			});
+		}
+	};
+
+	for (const edge of getInheritanceEdges(data)) {
+		if (configIndex.has(edge.id)) continue;
+
+		errors.push(
+			buildReferenceError(
+				edge.path,
+				"config",
+				edge.id,
+				suggestName(edge.id, configIndex.keys()),
+			),
+		);
+	}
+
+	for (const chain of cycles) {
+		const instancePath = Array.isArray(data.copy_configs)
+			? "/copy_configs/0"
+			: typeof data.copy_configs === "string"
+				? "/copy_configs"
+				: "/sc_file";
+
+		errors.push({
+			instancePath,
+			keyword: "reference",
+			message: `Config inheritance cycle: ${chain.join(" -> ")}.`,
+			params: { kind: "config", cycle: chain },
+		});
+	}
+
+	function walk(node, parts, state) {
+		if (Array.isArray(node)) {
+			node.forEach((value, index) => {
+				walk(value, [...parts, index], state);
+			});
+			return;
+		}
+
+		if (!node || typeof node !== "object") return;
+
+		for (const [key, value] of Object.entries(node)) {
+			const childParts = [...parts, key];
+			const instancePath = pointerFor(childParts);
+			const isBindingDeclaration =
+				parts.length === 0 && (key === "bindings" || key === "buttons");
+			const isAnimationSection =
+				parts.length === 0 && (key === "animation" || key === "animations");
+			const insideBindingDeclaration = state.insideBindingDeclaration || isBindingDeclaration;
+			const insideAnimationSection = state.insideAnimationSection || isAnimationSection;
+
+			if (key === "parent_binding") {
+				checkBinding(value, instancePath);
+			}
+
+			if (key === "binding" && !insideBindingDeclaration) {
+				checkBinding(value, instancePath);
+			}
+
+			if ((key === "hide_binding" || key === "show_binding") && Array.isArray(value)) {
+				value.forEach((name, index) => {
+					checkBinding(name, `${instancePath}/${index}`);
+				});
+			}
+
+			if (insideAnimationSection) {
+				if (
+					key === "next_animation" ||
+					key === "animation_next" ||
+					key === "next"
+				) {
+					checkAnimation(value, instancePath);
+				}
+
+				if (key === "also_play" || key === "default_animation") {
+					checkAnimationValue(value, instancePath);
+				}
+			}
+
+			if (parts.length === 0 && key === "default_animation") {
+				checkAnimationValue(value, instancePath);
+			}
+
+			walk(value, childParts, {
+				insideBindingDeclaration,
+				insideAnimationSection,
+			});
+		}
+	}
+
+	walk(data, [], {
+		insideBindingDeclaration: false,
+		insideAnimationSection: false,
+	});
+
+	return errors;
+}
+
 async function main() {
 	const files = (await findUiFiles(uiDir)).sort();
 
@@ -387,6 +721,10 @@ async function main() {
 
 	const schema = normalizeSchema(await loadJson(schemaUrl));
 	const validate = ajv.compile(schema);
+	const anchors = getContainerAnchors(schema);
+	const referenceDocuments = await loadReferenceDocuments();
+	const configIndex = indexConfigs(referenceDocuments);
+	const parsedFiles = new Map(referenceDocuments.map((document) => [document.file, document.data]));
 
 	let failed = 0;
 
@@ -394,22 +732,32 @@ async function main() {
 		const source = await readFile(file, "utf8");
 		const sourceInfo = getSourceLocations(source);
 
-		let data;
+		let data = parsedFiles.get(file);
 
-		try {
-			data = parse(source);
-		} catch (error) {
-			failed++;
-			console.error(`\n${formatParseError(error, file, sourceInfo)}`);
-			continue;
+		if (!data) {
+			try {
+				data = parse(source);
+			} catch (error) {
+				failed++;
+				console.error(`\n${formatParseError(error, file, sourceInfo)}`);
+				continue;
+			}
 		}
 
-		if (!validate(data)) {
-			failed++;
+		const errors = [];
 
-			for (const error of validate.errors ?? []) {
-				console.error(`\n${formatAjvError(error, file, data, sourceInfo)}`);
-			}
+		if (!validate(data)) {
+			errors.push(...(validate.errors ?? []));
+		}
+
+		errors.push(...validateReferences(data, configIndex, anchors));
+
+		if (errors.length === 0) continue;
+
+		failed++;
+
+		for (const error of errors) {
+			console.error(`\n${formatAjvError(error, file, sourceInfo)}`);
 		}
 	}
 
