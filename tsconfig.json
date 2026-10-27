@@ -1,6 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/TypeScriptToLua/TypeScriptToLua/master/tsconfig-schema.json",
     "compilerOptions": {
+        "rootDir": "src",
+        "outDir": "dist/",
         "ignoreDeprecations": "6.0",
         "target": "ESNext",
         "lib": [
@@ -18,7 +20,7 @@
     "tstl": {
         "luaTarget": "Luau",
         "luaBundleEntry": "src/main.ts",
-        "luaBundle": "dist/doomBrawl.luau",
+        "luaBundle": "doomBrawl.luau",
         "luaLibImport": "require-minimal",
         "luaPlugins": [
             {

@@ -1,10 +1,14 @@
+
 {
-    "generator": { name: "dense", column_span: 1024 },
+    "generator": {
+        "name": "dense",
+        "column_span": 1024
+    },
     "lua_extension": "luau",
     "bundle": {
-        "require_mode": {
-            "name": "luau",
-            "use_luau_configuration": true
+        require_mode: {
+            name: "luau",
+            // module_folder_name: "dist/modules/",
         }
     },
     "rules": [
@@ -17,16 +21,16 @@
         "compute_expression",
         "remove_unused_if_branch",
         "remove_types",
-        "remove_spaces",
-        "remove_comments",
-        "remove_empty_do",
-        "remove_unused_while",
         "filter_after_early_return",
+        "remove_unused_while",
         "remove_unused_variable",
-        "remove_method_definition",
+        "remove_empty_do",
         "convert_index_to_field",
         "remove_nil_declaration",
         "remove_function_call_parens",
+        "remove_method_definition",
+        "remove_spaces",
+        "remove_comments",
         {
             "rule": "rename_variables",
             "include_functions": true,

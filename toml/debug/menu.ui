@@ -1,5 +1,5 @@
 id = "debug_menu"
-priority = 10
+priority = 5
 
 sc_file_source = "ClientFile"
 sc_file = "sc/effects_brawler_stella.sc"
@@ -9,6 +9,7 @@ interactive = [""]
 
 [buttons]
 close_button = {parent_binding="menu_container", path="close_button"}
+open_search = {parent_binding="menu_container", path="debug_menu_input_button"}
 
 # Pagination buttons
 next_page = {parent_binding="menu_container", path="next_page_button"}
@@ -61,10 +62,6 @@ button_10 = {binding="button_container", start="button_0", end="button_10"}
 
 default_animation = "stop"
 
-[[set_text]]
-binding = "search_help_txt"
-text = "click to search..."
-
 [bindings]
 self = "top_right"
 menu_container = {parent_binding="self", path="menu"}
@@ -98,10 +95,3 @@ button_7_txt = {parent_binding="button_7", path="Text"}
 button_8_txt = {parent_binding="button_8", path="Text"}
 button_9_txt = {parent_binding="button_9", path="Text"}
 button_10_txt = {parent_binding="button_10", path="Text"}
-
-# [[replace]]
-# binding ="button_5"
-# sc_file_source = "ClientFile"
-# sc_file="sc/ui.sc"
-# export_name="icon_modifier_48"
-

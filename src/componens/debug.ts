@@ -3,6 +3,7 @@ import Version from "../version";
 import { UIItem } from "../ui/item";
 import type { UIButtonCallback } from "../ui/item_system";
 import { UIPlayerItem } from "../ui/player_item";
+import keyboard from "./keyboard";
 
 interface State {
 	debugEnabled: boolean;
@@ -49,6 +50,9 @@ export class UIDebugMenu {
 		this.debugMenu.setCallback("close_button", (player) => {
 			this.toggleDebugMenu(player);
 		});
+		this.debugMenu.setCallback("open_search", (player) => {
+			this.openSearch(player);
+		});
 
 		this.checker = new UIPlayerItem("debug_checker", {
 			show: false,
@@ -59,8 +63,29 @@ export class UIDebugMenu {
 
 		this.initializeButtons();
 		this.initializeButtonCallback();
+		this.setSearchClue("click to search...");
 
 		log("Initialized Debug menu");
+	}
+
+	private openSearch(player: number) {
+		log("Calling debug search")
+		
+		keyboard.show((player, text, finished) => {
+			this.updateSearch(text, finished, player);
+
+			if (finished) this.closeSearch(player);
+		}, player);
+	}
+
+	private updateSearch(text: string, finished: boolean, player: number) {}
+
+	private closeSearch(player: number) {
+		this.setSearchClue("click to search...");
+	}
+
+	private setSearchClue(text: string) {
+		this.debugMenu.setText("search_help_txt", text);
 	}
 
 	private createButton(button: DebugButton) {
@@ -167,7 +192,10 @@ export class UIDebugMenu {
 
 		// Update visibility
 		const animation = enabled ? "hide" : "show";
-		if (DEBUG) log(`Set debug menu state for ${player} to ${animation} at ${server.tick}`);
+		if (DEBUG)
+			log(
+				`Set debug menu state for ${player} to ${animation} at ${server.tick}`,
+			);
 
 		this.state.set(player, "debugEnabled", !enabled);
 		this.debugMenu.playAnimation(animation, player);

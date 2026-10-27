@@ -34,7 +34,6 @@ export class UIItem extends UIItemInstance {
 
 	private state: UIItemData;
 	private initialized = false;
-	private changed = true;
 
 	constructor(
 		private name: string,
@@ -57,16 +56,9 @@ export class UIItem extends UIItemInstance {
 		}
 
 		if (options.show === false) {
-			this.changed = false;
+			// TODO: trigger this.visible
+			super.update();
 		}
-
-		if (DEBUG) {
-			log(`Created UIItem with id ${this.id} and name ${name}`);
-		}
-	}
-
-	private setDirty() {
-		this.changed = true;
 	}
 
 	private serialize() {
@@ -119,10 +111,16 @@ export class UIItem extends UIItemInstance {
 		return data;
 	}
 
-	public update(deferred: boolean = true, player?: number) {
-		if (!this.changed) return;
+	public update(
+		deferred: boolean = true,
+		player?: number,
+		updateContext: boolean = true,
+	) {
+		if (!this.dirty) return;
 
-		const data = this.serialize();
+		const data: any = {
+			id: this.id,
+		};
 
 		// Multi target handle
 		if (player !== undefined) data.target_index = player;
@@ -133,17 +131,36 @@ export class UIItem extends UIItemInstance {
 			animations.push(animation);
 		}
 
-		if (animations.length > 0) {
+		if (animations.length === 1) {
+			data.animation = animations[0];
+		}
+
+		this.context.update(
+			{
+				...data,
+				...this.serialize(),
+			},
+			deferred,
+		);
+
+		if (animations.length > 1) {
 			for (const animation of animations) {
-				data.animation = animation;
-				this.context.update(data, deferred);
+				this.context.update(
+					{
+						...data,
+						animation,
+					},
+					deferred,
+				);
 			}
-		} else {
-			this.context.update(data, deferred);
 		}
 
 		this.state.animation = new LuaSet();
-		this.changed = false;
+		super.update();
+
+		if (updateContext) {
+			this.context.changed = false;
+		}
 	}
 
 	destroy(player?: number) {
@@ -166,7 +183,7 @@ export class UIItem extends UIItemInstance {
 		if (this.state.texts[binding] === text) return;
 
 		this.state.texts[binding] = text;
-		this.setDirty();
+		this.makeDirty();
 	}
 
 	setCallback(binding: string, callback: UIButtonCallback) {
@@ -177,11 +194,16 @@ export class UIItem extends UIItemInstance {
 		if (this.state.position === value) return;
 
 		this.options.position = value;
-		this.setDirty();
+		this.makeDirty();
 	}
 
 	set visible(value: boolean) {
-		this.changed = value;
+		// TODO: refactor after visibility implemented in scripting API
+		if (value) {
+			this.makeDirty();
+		} else {
+			super.update();
+		}
 	}
 
 	get position(): UIPosition {
@@ -204,6 +226,6 @@ export class UIItem extends UIItemInstance {
 		}
 
 		// log(`playAnimation: ${value} - ${updated}`);
-		if (updated) this.setDirty();
+		if (updated) this.makeDirty();
 	}
 }

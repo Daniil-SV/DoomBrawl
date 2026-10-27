@@ -93,8 +93,9 @@ export class UIPlayerItem extends UIItemInstance {
 
 	update(deferred: boolean = true): void {
 		this.forPlayers((item, player) => {
-			item.update(deferred, player);
+			item.update(deferred, player, false);
 		});
+		this.context.changed = false;
 	}
 
 	create(player?: number): void {

@@ -1,3 +1,4 @@
+import Events from "../event_manager";
 import { UISystem } from "../ui/ui";
 
 class GlobalState {
@@ -14,7 +15,11 @@ class GlobalState {
 
 	public update() {
 		this.updateTime();
+		Events.update();
+
 		this.ui.update();
+
+		Events.pushEvents();
 	}
 }
 

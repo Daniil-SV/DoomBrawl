@@ -1,0 +1,140 @@
+id = "ui_keyboard"
+priority = 10
+
+sc_file_source = "ClientFile"
+sc_file = "sc/effects_brawler_stella.sc"
+container_bottom = "keyboard"
+
+interactive = [""]
+
+[buttons]
+
+# Generic keys
+k1 = {parent_binding = "keyboard", path="k1"}
+k2 = {parent_binding = "keyboard", path="k2"}
+k3 = {parent_binding = "keyboard", path="k3"}
+k4 = {parent_binding = "keyboard", path="k4"}
+k5 = {parent_binding = "keyboard", path="k5"}
+k6 = {parent_binding = "keyboard", path="k6"}
+k7 = {parent_binding = "keyboard", path="k7"}
+k8 = {parent_binding = "keyboard", path="k8"}
+k9 = {parent_binding = "keyboard", path="k9"}
+k10 = {parent_binding = "keyboard", path="k10"}
+k11 = {parent_binding = "keyboard", path="k11"}
+k12 = {parent_binding = "keyboard", path="k12"}
+k13 = {parent_binding = "keyboard", path="k13"}
+k14 = {parent_binding = "keyboard", path="k14"}
+k15 = {parent_binding = "keyboard", path="k15"}
+k16 = {parent_binding = "keyboard", path="k16"}
+k17 = {parent_binding = "keyboard", path="k17"}
+k18 = {parent_binding = "keyboard", path="k18"}
+k19 = {parent_binding = "keyboard", path="k19"}
+k20 = {parent_binding = "keyboard", path="k20"}
+k21 = {parent_binding = "keyboard", path="k21"}
+k22 = {parent_binding = "keyboard", path="k22"}
+k23 = {parent_binding = "keyboard", path="k23"}
+k24 = {parent_binding = "keyboard", path="k24"}
+k25 = {parent_binding = "keyboard", path="k25"}
+k26 = {parent_binding = "keyboard", path="k26"}
+k27 = {parent_binding = "keyboard", path="k27"}
+k28 = {parent_binding = "keyboard", path="k28"}
+
+shift = {parent_binding = "keyboard", path="shift"}
+numeric = {parent_binding = "keyboard", path="numeric"}
+space = {parent_binding = "keyboard", path="space"}
+clear = {parent_binding = "keyboard", path="clear"}
+enter = {parent_binding = "keyboard", path="enter"}
+
+[animations]
+
+show = {parent_binding="self", path="", start="ani_in", end="ani_idle"}
+hide = {parent_binding="self", path="", start="ani_out", end="ani_end"}
+stop = {parent_binding="self", path="", end="ani_in"}
+
+layout_qwerty = {binding="keyboard", end="qwerty"}
+default_animation="stop"
+
+[[set_text]]
+parent_binding = "k1"
+path = "txt"
+text = "A"
+
+[bindings]
+
+# Base containers
+self = "bottom"
+keyboard = {parent_binding = "self", path="keyboard/layout"}
+
+# Generic keys bindings
+k1 = {parent_binding = "keyboard", path="k1"}
+k2 = {parent_binding = "keyboard", path="k2"}
+k3 = {parent_binding = "keyboard", path="k3"}
+k4 = {parent_binding = "keyboard", path="k4"}
+k5 = {parent_binding = "keyboard", path="k5"}
+k6 = {parent_binding = "keyboard", path="k6"}
+k7 = {parent_binding = "keyboard", path="k7"}
+k8 = {parent_binding = "keyboard", path="k8"}
+k9 = {parent_binding = "keyboard", path="k9"}
+k10 = {parent_binding = "keyboard", path="k10"}
+k11 = {parent_binding = "keyboard", path="k11"}
+k12 = {parent_binding = "keyboard", path="k12"}
+k13 = {parent_binding = "keyboard", path="k13"}
+k14 = {parent_binding = "keyboard", path="k14"}
+k15 = {parent_binding = "keyboard", path="k15"}
+k16 = {parent_binding = "keyboard", path="k16"}
+k17 = {parent_binding = "keyboard", path="k17"}
+k18 = {parent_binding = "keyboard", path="k18"}
+k19 = {parent_binding = "keyboard", path="k19"}
+k20 = {parent_binding = "keyboard", path="k20"}
+k21 = {parent_binding = "keyboard", path="k21"}
+k22 = {parent_binding = "keyboard", path="k22"}
+k23 = {parent_binding = "keyboard", path="k23"}
+k24 = {parent_binding = "keyboard", path="k24"}
+k25 = {parent_binding = "keyboard", path="k25"}
+k26 = {parent_binding = "keyboard", path="k26"}
+k27 = {parent_binding = "keyboard", path="k27"}
+k28 = {parent_binding = "keyboard", path="k28"}
+# In total 28 unique keys for now
+
+# Generic keys texts
+k1_txt = {parent_binding="k1", path="txt"}
+k2_txt = {parent_binding="k2", path="txt"}
+k3_txt = {parent_binding="k3", path="txt"}
+k4_txt = {parent_binding="k4", path="txt"}
+k5_txt = {parent_binding="k5", path="txt"}
+k6_txt = {parent_binding="k6", path="txt"}
+k7_txt = {parent_binding="k7", path="txt"}
+k8_txt = {parent_binding="k8", path="txt"}
+k9_txt = {parent_binding="k9", path="txt"}
+k10_txt = {parent_binding="k10", path="txt"}
+k11_txt = {parent_binding="k11", path="txt"}
+k12_txt = {parent_binding="k12", path="txt"}
+k13_txt = {parent_binding="k13", path="txt"}
+k14_txt = {parent_binding="k14", path="txt"}
+k15_txt = {parent_binding="k15", path="txt"}
+k16_txt = {parent_binding="k16", path="txt"}
+k17_txt = {parent_binding="k17", path="txt"}
+k18_txt = {parent_binding="k18", path="txt"}
+k19_txt = {parent_binding="k19", path="txt"}
+k20_txt = {parent_binding="k20", path="txt"}
+k21_txt = {parent_binding="k21", path="txt"}
+k22_txt = {parent_binding="k22", path="txt"}
+k23_txt = {parent_binding="k23", path="txt"}
+k24_txt = {parent_binding="k24", path="txt"}
+k25_txt = {parent_binding="k25", path="txt"}
+k26_txt = {parent_binding="k26", path="txt"}
+k27_txt = {parent_binding="k27", path="txt"}
+k28_txt = {parent_binding="k28", path="txt"}
+
+# Special keys
+shift = {parent_binding = "keyboard", path="shift"}
+numeric = {parent_binding = "keyboard", path="numeric"}
+space = {parent_binding = "keyboard", path="space"}
+clear = {parent_binding = "keyboard", path="clear"}
+enter = {parent_binding = "keyboard", path="enter"}
+
+shift_txt = {parent_binding = "shift", path="txt"}
+numeric_txt = {parent_binding = "numeric", path="txt"}
+space_txt = {parent_binding = "space", path="txt"}
+clear_txt = {parent_binding = "clear", path="txt"}
+enter_txt = {parent_binding = "enter", path="txt"}

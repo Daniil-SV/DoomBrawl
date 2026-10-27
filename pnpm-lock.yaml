@@ -165,14 +165,13 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@gwigz/tstl-bundle-flatten':
-        specifier: ^1.4.0
-        version: 1.4.0(typescript-to-lua@1.37.1(typescript@6.0.3))
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.6.2
         version: 2.6.2
+      '@gwigz/tstl-bundle-flatten':
+        specifier: github:Daniil-SV/tstl-bundle-flatten#build
+        version: https://codeload.github.com/Daniil-SV/tstl-bundle-flatten/tar.gz/399880eb780a74be8dc3042dbb453c7fbd3bc4d5(darklua-wasm@0.1.0)(typescript-to-lua@1.37.1(typescript@6.0.3))
       '@typescript-to-lua/language-extensions':
         specifier: ^1.19.0
         version: 1.19.0
@@ -263,8 +262,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@gwigz/tstl-bundle-flatten@1.4.0':
-    resolution: {integrity: sha512-L1MKGRUinZ4t3cdctP41njV1IFq11DiqAOh2Nj7Nzv/o+3TFdZZMhD4eVJxs6YQGELc/7LJ0UIX38R1fqdZq9w==}
+  '@gwigz/tstl-bundle-flatten@https://codeload.github.com/Daniil-SV/tstl-bundle-flatten/tar.gz/399880eb780a74be8dc3042dbb453c7fbd3bc4d5':
+    resolution: {gitHosted: true, integrity: sha512-Ye+JElTLWdcJ37V+R/QC8+6OYec1IzbR/BaPgMlej8oj1oImT5RVppmX51kVhXis1lSP5Oy6LvqNjNhrFZbjhQ==, tarball: https://codeload.github.com/Daniil-SV/tstl-bundle-flatten/tar.gz/399880eb780a74be8dc3042dbb453c7fbd3bc4d5}
+    version: 1.4.0
     peerDependencies:
       darklua-wasm: '>=0.1.0'
       typescript-to-lua: '>=1.22.0'
@@ -277,6 +277,9 @@ packages:
 
   ajv@8.20.0:
     resolution: {integrity: sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==}
+
+  darklua-wasm@0.1.0:
+    resolution: {integrity: sha512-hIr5GoyMzd3QhbsAggWjQiRGyF2ufZiAqJ35nT3+D3M2GCEQxPLfYzbtrBFBea3Rcg1H9duKSXivItz5OIatCQ==}
 
   enhanced-resolve@5.8.2:
     resolution: {integrity: sha512-F27oB3WuHDzvR2DOGNTaYy0D5o0cnrv8TeI482VM4kYgQd/FT9lUQwuNsJ0oOHtBUq7eiW5ytqzp7nBFknL+GA==}
@@ -401,9 +404,11 @@ snapshots:
   '@biomejs/cli-win32-x64@2.6.2':
     optional: true
 
-  '@gwigz/tstl-bundle-flatten@1.4.0(typescript-to-lua@1.37.1(typescript@6.0.3))':
+  '@gwigz/tstl-bundle-flatten@https://codeload.github.com/Daniil-SV/tstl-bundle-flatten/tar.gz/399880eb780a74be8dc3042dbb453c7fbd3bc4d5(darklua-wasm@0.1.0)(typescript-to-lua@1.37.1(typescript@6.0.3))':
     dependencies:
       typescript-to-lua: 1.37.1(typescript@6.0.3)
+    optionalDependencies:
+      darklua-wasm: 0.1.0
 
   '@typescript-to-lua/language-extensions@1.19.0': {}
 
@@ -413,6 +418,9 @@ snapshots:
       fast-uri: 3.1.9
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
+
+  darklua-wasm@0.1.0:
+    optional: true
 
   enhanced-resolve@5.8.2:
     dependencies:

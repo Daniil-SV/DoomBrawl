@@ -1,5 +1,6 @@
 import { UIBottomBar } from "../componens/bottom";
 import { UIDebugMenu } from "../componens/debug";
+import keyboard from "../componens/keyboard";
 import { UIItemSystem } from "./item_system";
 
 export class UISystem {
@@ -15,16 +16,12 @@ export class UISystem {
 		server.customInputListeners.add(listener);
 	}
 
-	private updateElements() {
+	public update() {
 		if (DEBUG) {
 			this.debug?.update();
 		}
 
 		this.bottom.update();
-	}
-
-	public update() {
-		this.updateElements();
-		UIItemSystem.pollEvents();
+		keyboard.update();
 	}
 }

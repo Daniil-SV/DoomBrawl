@@ -26,14 +26,12 @@
   "type": "module",
   "devDependencies": {
     "@biomejs/biome": "^2.6.2",
+    "@gwigz/tstl-bundle-flatten": "github:Daniil-SV/tstl-bundle-flatten#build",
     "@typescript-to-lua/language-extensions": "^1.19.0",
     "ajv": "^8.20.0",
     "lua-types": "^2.14.1",
     "smol-toml": "^1.9.1",
     "typescript": "^6.0.3",
     "typescript-to-lua": "^1.37.1"
-  },
-  "dependencies": {
-    "@gwigz/tstl-bundle-flatten": "^1.4.0"
   }
 }

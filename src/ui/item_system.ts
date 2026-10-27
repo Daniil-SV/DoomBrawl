@@ -1,38 +1,61 @@
 import { logTable } from "../debug";
+import Events from "../event_manager";
+import { GlobalLogger, Logger } from "../logger";
 
 export type UIButtonCallback = (player: number) => void;
 
+/** Interface class for buttons implementations */
 export class UIItemInstance {
 	constructor(protected context: UIItemSystem) {}
+
+	private changed = false;
 
 	get id() {
 		return this.context.id;
 	}
+
+	protected makeDirty() {
+		this.changed = true;
+	}
+
+	get dirty() {
+		return this.context.changed || this.changed;
+	}
+
+	update() {
+		this.changed = false;
+	}
 }
 
-enum UIEvents {
-	Remove = "removeUIItem",
-	Update = "updateUIItem",
-}
+/** Object with registered buttons callback where key is generated client input value and value is callback */
+type UIButtonCallbackData = LuaTable<number, UIButtonCallback>;
 
-const MAX_DEFERRED_EVENTS = 300;
-
+/** Shared context for all buttons instances */
 export class UIItemSystem {
 	static Components: LuaTable<number, UIItemSystem> = new LuaTable();
-	private static DeferredEvents: EventTask[] = [];
 
-	private static Buttons: LuaMap<number, LuaMap<number, UIButtonCallback>> =
-		new LuaMap();
+	/** Global map with per button callback data where key is button id and value is callback data */
+	private static Buttons: LuaMap<number, UIButtonCallbackData> = new LuaMap();
 
 	private static idCounter = 1;
 	private static buttonIdCounter = 1;
 
 	readonly id = this.createId();
-	private buttonListeners: LuaTable<number> = new LuaTable();
+
+	/** Map object with listeners registered by object */
+	private buttonListeners: LuaTable<string, any> = new LuaTable();
+
+	changed = false;
+
+	private logger = new Logger(UIItemSystem.name);
 
 	constructor(private interactive: boolean) {
-		if (interactive) UIItemSystem.Buttons.set(this.id, new LuaMap());
+		if (interactive) UIItemSystem.Buttons.set(this.id, new LuaTable());
 		UIItemSystem.Components.set(this.id, this);
+
+		if (DEBUG) {
+			this.logger.trace(`Created object with id ${this.id}`);
+		}
 	}
 
 	private createId() {
@@ -43,44 +66,37 @@ export class UIItemSystem {
 		return UIItemSystem.buttonIdCounter++;
 	}
 
-	private sendEvent(type: UIEvents, data: any, deferred: boolean = true) {
-		if (deferred) {
-			UIItemSystem.DeferredEvents.push({
-				action: type,
-				...data,
-			});
-			return;
-		}
-
-		event(type, data);
-	}
-
 	private debugLog(data: any) {
 		log("--------------------------");
 		logTable(data);
 		log("--------------------------");
 	}
 
+	protected makeDirty() {
+		this.changed = true;
+	}
+
 	public update(data: any, deferred: boolean = true) {
 		if (DEBUG) {
-			log(`Updating UIItem with ID ${this.id} at tick ${server.tick}`);
-			this.debugLog(data);
+			this.logger.trace(
+				`Updating id ${this.id} at tick ${server.tick}`,
+			);
+			// this.debugLog(data);
 		}
 
-		this.sendEvent(UIEvents.Update, data, deferred);
+		Events.send("updateUIItem", data, deferred);
 	}
 
 	public destroy(data: any = {}) {
 		UIItemSystem.Components.delete(this.id);
+		if (this.interactive) {
+			UIItemSystem.Buttons.delete(this.id);
+		}
 
-		this.sendEvent(
-			UIEvents.Remove,
-			{
-				id: this.id,
-				...data,
-			},
-			false,
-		);
+		Events.send("removeUIItem", {
+			id: this.id,
+			...data,
+		});
 	}
 
 	public serialize(): any {
@@ -90,7 +106,12 @@ export class UIItemSystem {
 
 		// Buttons
 		if (!this.buttonListeners.isEmpty()) {
-			data.buttons = this.buttonListeners;
+			const buttonListeners = [];
+			for (const [_, listener] of this.buttonListeners) {
+				buttonListeners.push(listener);
+			}
+
+			data.buttons = buttonListeners;
 		}
 
 		return data;
@@ -98,21 +119,28 @@ export class UIItemSystem {
 
 	public setCallback(binding: string, callback: UIButtonCallback) {
 		if (!this.interactive) {
-			error("Trying to set button for non-interactive UIItem");
+			this.logger.error(
+				`Trying to set ${binding} button for non-interactive UIItem with id ${this.id}`,
+			);
 		}
 
-		const index = this.buttonListeners.length() + 1;
-		const id = this.createButtonId();
+		const existingCallback = this.buttonListeners.get(binding);
+		if (existingCallback === callback) {
+			// Trying to register the same callback, exit
+			return;
+		}
 
-		this.buttonListeners.set(index, {
+		const mapping = UIItemSystem.Buttons.get(this.id);
+		if (mapping === undefined) return;
+
+		const id = this.createButtonId();
+		this.buttonListeners.set(binding, {
 			binding,
 			client_input_value: id,
 		});
+		mapping.set(id, callback);
 
-		const mapping = UIItemSystem.Buttons.get(this.id);
-		if (mapping !== undefined) {
-			mapping.set(id, callback);
-		}
+		this.makeDirty();
 	}
 
 	public static updateInput(
@@ -122,7 +150,7 @@ export class UIItemSystem {
 		input: number,
 	) {
 		if (DEBUG) {
-			log(
+			GlobalLogger.trace(
 				`Got input from ${player} with id ${id} and value ${input} at tick ${server.tick}`,
 			);
 		}
@@ -140,22 +168,5 @@ export class UIItemSystem {
 		}
 
 		callback(player);
-	}
-
-	public static pollEvents() {
-		if (DEBUG && UIItemSystem.DeferredEvents.length !== 0)
-			log(`Sending ${UIItemSystem.DeferredEvents.length} deferred UI events`);
-
-		for (
-			let i = 0;
-			i < UIItemSystem.DeferredEvents.length;
-			i += MAX_DEFERRED_EVENTS
-		) {
-			event("scheduleTasks", {
-				tasks: UIItemSystem.DeferredEvents.slice(i, i + MAX_DEFERRED_EVENTS),
-			});
-		}
-
-		UIItemSystem.DeferredEvents = [];
 	}
 }
