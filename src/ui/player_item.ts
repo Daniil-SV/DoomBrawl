@@ -1,3 +1,4 @@
+import { GlobalLogger } from "../logger";
 import { PlayerState } from "../state/player";
 import { UIItem, type UIItemOptions } from "./item";
 import {
@@ -81,6 +82,7 @@ export class UIPlayerItem extends UIItemInstance {
 
 	playAnimation(value: string | string[], player?: number): void {
 		this.forPlayers((item) => {
+			// GlobalLogger.warn(`Playing animation ${value} for player ${player}`);
 			item.playAnimation(value);
 		}, player);
 	}

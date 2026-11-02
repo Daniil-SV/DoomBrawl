@@ -3,3 +3,7 @@
 /modpack/build
 /node_modules
 RECOVER_*.fla
+
+/larvae.toml
+/.larvae
+/scripts/tstl-relative-requires.cjs

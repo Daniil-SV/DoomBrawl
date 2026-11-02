@@ -1,0 +1,17 @@
+id = "debug_analytic"
+priority = 5
+
+sc_file_source = "ClientFile"
+sc_file = "sc/effects_brawler_stella.sc"
+container_left_right = "debug_analytic"
+
+[bindings]
+self = "left_right"
+
+title = {parent_binding="self", path="title_txt"}
+
+time = {parent_binding="self", path="time_txt"}
+time_value = {parent_binding="self", path="time_value_txt"}
+
+tick = {parent_binding="self", path="tick_txt"}
+tick_value = {parent_binding="self", path="tick_value_txt"}

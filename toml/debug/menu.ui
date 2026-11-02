@@ -10,6 +10,8 @@ interactive = [""]
 [buttons]
 close_button = {parent_binding="menu_container", path="close_button"}
 open_search = {parent_binding="menu_container", path="debug_menu_input_button"}
+filter_input = {parent_binding="menu_container", path="filter_input"}
+filter_clear = {parent_binding="menu_container", path="clear_button"}
 
 # Pagination buttons
 next_page = {parent_binding="menu_container", path="next_page_button"}

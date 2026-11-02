@@ -38,32 +38,74 @@ k25 = {parent_binding = "keyboard", path="k25"}
 k26 = {parent_binding = "keyboard", path="k26"}
 k27 = {parent_binding = "keyboard", path="k27"}
 k28 = {parent_binding = "keyboard", path="k28"}
+k29 = {parent_binding = "keyboard", path="k29"}
 
+# Numpad
+# It requires special handling since it uses different keys
+# numpad1 = {parent_binding = "keyboard", path="k1", child_index=40}
+# numpad2 = {parent_binding = "keyboard", path="k2", child_index=39}
+# numpad3 = {parent_binding = "keyboard", path="k3", child_index=1}
+# numpad4 = {parent_binding = "keyboard", path="k4", child_index=1}
+# numpad5 = {parent_binding = "keyboard", path="k5", child_index=1}
+# numpad6 = {parent_binding = "keyboard", path="k6", child_index=1}
+# numpad7 = {parent_binding = "keyboard", path="k7", child_index=1}
+# numpad8 = {parent_binding = "keyboard", path="k8", child_index=1}
+# numpad9 = {parent_binding = "keyboard", path="k9", child_index=1}
+# numpad10 = {parent_binding = "keyboard", path="k10", child_index=1}
+# numpad11 = {parent_binding = "keyboard", path="k11", child_index=1}
+# numpad12 = {parent_binding = "keyboard", path="k12", child_index=1}
+# numpad13 = {parent_binding = "keyboard", path="k13", child_index=1}
+# numpad14 = {parent_binding = "keyboard", path="k14", child_index=1}
+# numpad15 = {parent_binding = "keyboard", path="k15", child_index=1}
+# numpad16 = {parent_binding = "keyboard", path="k16", child_index=1}
+# numpad17 = {parent_binding = "keyboard", path="k17", child_index=1}
+# numpad18 = {path="bottom/keyboard/layout", find="k18", child_index=0}
+
+
+# Special keys
 shift = {parent_binding = "keyboard", path="shift"}
 numeric = {parent_binding = "keyboard", path="numeric"}
 space = {parent_binding = "keyboard", path="space"}
 clear = {parent_binding = "keyboard", path="clear"}
 enter = {parent_binding = "keyboard", path="enter"}
+alphabetic = {parent_binding = "keyboard", path="alphabetic"}
+numpad = {parent_binding = "keyboard", path="numpad"}
+symbols = {parent_binding = "keyboard", path="symbols"}
+close = {parent_binding = "self", path="close_area"}
+emoji = {parent_binding = "keyboard", path="emoji"}
+
+# Suggestions
+suggest_1 = {parent_binding = "background", path="suggest_1"}
+suggest_2 = {parent_binding = "background", path="suggest_2"}
+suggest_3 = {parent_binding = "background", path="suggest_3"}
 
 [animations]
 
+# General states
 show = {parent_binding="self", path="", start="ani_in", end="ani_idle"}
-hide = {parent_binding="self", path="", start="ani_out", end="ani_end"}
-stop = {parent_binding="self", path="", end="ani_in"}
+hide = {parent_binding="self", path="", start="ani_out", end="ani_end", also_play=["suggest_0"]}
+stop = {parent_binding="self", path="", end="ani_in", also_play=["suggest_0"]}
 
+# Layouts
 layout_qwerty = {binding="keyboard", end="qwerty"}
-default_animation="stop"
+layout_numeric = {binding="keyboard", end="numeric"}
+layout_symbols = {binding="keyboard", end="symbols"}
+layout_numpad = {binding="keyboard", end="numpad"}
 
-[[set_text]]
-parent_binding = "k1"
-path = "txt"
-text = "A"
+# Suggestions states
+suggest_0 = {binding="background", end="suggest_0"}
+suggest_1 = {binding="background", end="suggest_1"}
+suggest_2 = {binding="background", end="suggest_2"}
+suggest_3 = {binding="background", end="suggest_3"}
+
+default_animation="stop"
 
 [bindings]
 
 # Base containers
 self = "bottom"
 keyboard = {parent_binding = "self", path="keyboard/layout"}
+background = {parent_binding = "self", path="keyboard/bgr"}
 
 # Generic keys bindings
 k1 = {parent_binding = "keyboard", path="k1"}
@@ -94,7 +136,28 @@ k25 = {parent_binding = "keyboard", path="k25"}
 k26 = {parent_binding = "keyboard", path="k26"}
 k27 = {parent_binding = "keyboard", path="k27"}
 k28 = {parent_binding = "keyboard", path="k28"}
-# In total 28 unique keys for now
+k29 = {parent_binding = "keyboard", path="k29"}
+# In total 29 unique keys for now
+
+# Numpad special handling
+# numpad1 = {parent_binding = "keyboard", path="k1", child_index=1}
+# numpad2 = {parent_binding = "keyboard", path="k2", child_index=1}
+# numpad3 = {parent_binding = "keyboard", path="k3", child_index=1}
+# numpad4 = {parent_binding = "keyboard", path="k4", child_index=1}
+# numpad5 = {parent_binding = "keyboard", path="k5", child_index=1}
+# numpad6 = {parent_binding = "keyboard", path="k6", child_index=1}
+# numpad7 = {parent_binding = "keyboard", path="k7", child_index=1}
+# numpad8 = {parent_binding = "keyboard", path="k8", child_index=1}
+# numpad9 = {parent_binding = "keyboard", path="k9", child_index=1}
+# numpad10 = {parent_binding = "keyboard", path="k10", child_index=1}
+# numpad11 = {parent_binding = "keyboard", path="k11", child_index=1}
+# numpad12 = {parent_binding = "keyboard", path="k12", child_index=1}
+# numpad13 = {parent_binding = "keyboard", path="k13", child_index=1}
+# numpad14 = {parent_binding = "keyboard", path="k14", child_index=1}
+# numpad15 = {parent_binding = "keyboard", path="k15", child_index=1}
+# numpad16 = {parent_binding = "keyboard", path="k16", child_index=1}
+# numpad17 = {parent_binding = "keyboard", path="k17", child_index=1}
+# numpad18 = {parent_binding = "keyboard", path="k18", child_index=49}
 
 # Generic keys texts
 k1_txt = {parent_binding="k1", path="txt"}
@@ -125,16 +188,55 @@ k25_txt = {parent_binding="k25", path="txt"}
 k26_txt = {parent_binding="k26", path="txt"}
 k27_txt = {parent_binding="k27", path="txt"}
 k28_txt = {parent_binding="k28", path="txt"}
+k29_txt = {parent_binding="k29", path="txt"}
+
+# numpad1_txt = {parent_binding="numpad1", path="txt"}
+# numpad2_txt = {parent_binding="numpad2", path="txt"}
+# numpad3_txt = {parent_binding="numpad3", path="txt"}
+# numpad4_txt = {parent_binding="numpad4", path="txt"}
+# numpad5_txt = {parent_binding="numpad5", path="txt"}
+# numpad6_txt = {parent_binding="numpad6", path="txt"}
+# numpad7_txt = {parent_binding="numpad7", path="txt"}
+# numpad8_txt = {parent_binding="numpad8", path="txt"}
+# numpad9_txt = {parent_binding="numpad9", path="txt"}
+# numpad10_txt = {parent_binding="numpad10", path="txt"}
+# numpad11_txt = {parent_binding="numpad11", path="txt"}
+# numpad12_txt = {parent_binding="numpad12", path="txt"}
+# numpad13_txt = {parent_binding="numpad13", path="txt"}
+# numpad14_txt = {parent_binding="numpad14", path="txt"}
+# numpad15_txt = {parent_binding="numpad15", path="txt"}
+# numpad16_txt = {parent_binding="numpad16", path="txt"}
+# numpad17_txt = {parent_binding="numpad17", path="txt"}
+# numpad18_txt = {parent_binding="numpad18", path="txt"}
 
 # Special keys
 shift = {parent_binding = "keyboard", path="shift"}
 numeric = {parent_binding = "keyboard", path="numeric"}
+symbols = {parent_binding = "keyboard", path="symbols"}
 space = {parent_binding = "keyboard", path="space"}
 clear = {parent_binding = "keyboard", path="clear"}
 enter = {parent_binding = "keyboard", path="enter"}
+alphabetic = {parent_binding = "keyboard", path="alphabetic"}
+numpad = {parent_binding = "keyboard", path="numpad"}
+emoji = {parent_binding = "keyboard", path="emoji"}
 
+# Suggests
+suggest_1 = {parent_binding="background", path="suggest_1"}
+suggest_2 = {parent_binding="background", path="suggest_2"}
+suggest_3 = {parent_binding="background", path="suggest_3"}
+
+# Special keys text
 shift_txt = {parent_binding = "shift", path="txt"}
 numeric_txt = {parent_binding = "numeric", path="txt"}
+symbols_txt = {parent_binding = "symbols", path="txt"}
 space_txt = {parent_binding = "space", path="txt"}
 clear_txt = {parent_binding = "clear", path="txt"}
 enter_txt = {parent_binding = "enter", path="txt"}
+alphabetic_txt = {parent_binding = "alphabetic", path="txt"}
+numpad_txt = {parent_binding = "numpad", path="txt"}
+emoji_txt = {parent_binding = "emoji", path="txt"}
+
+# Suggests text
+suggest_1_txt = {parent_binding = "suggest_1", path="txt"}
+suggest_2_txt = {parent_binding = "suggest_2", path="txt"}
+suggest_3_txt = {parent_binding = "suggest_3", path="txt"}

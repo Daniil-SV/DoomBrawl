@@ -137,8 +137,8 @@ export class UIItem extends UIItemInstance {
 
 		this.context.update(
 			{
-				...data,
 				...this.serialize(),
+				...data,
 			},
 			deferred,
 		);
@@ -147,8 +147,8 @@ export class UIItem extends UIItemInstance {
 			for (const animation of animations) {
 				this.context.update(
 					{
-						...data,
 						animation,
+						...data,
 					},
 					deferred,
 				);

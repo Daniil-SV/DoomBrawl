@@ -6,7 +6,7 @@
   "scripts": {
     "build": "pnpm transpile && pnpm optimize",
     "build:dev": "pnpx cross-env DEBUG=true pnpm build",
-    "transpile": "pnpx typescript-to-lua",
+    "transpile": "pnpx typescript-to-lua -p tsconfig.json",
     "optimize": "darklua process dist/doomBrawl.luau dist/doomBrawlOptimized.luau",
     "dev": "pnpx typescript-to-lua --watch",
     "lint": "biome check --fix --unsafe",
@@ -18,11 +18,11 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.15.0",
+      "version": "12.16.1",
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@12.15.0",
+  "packageManager": "pnpm@12.16.1",
   "type": "module",
   "devDependencies": {
     "@biomejs/biome": "^2.6.2",

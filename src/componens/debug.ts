@@ -4,13 +4,15 @@ import { UIItem } from "../ui/item";
 import type { UIButtonCallback } from "../ui/item_system";
 import { UIPlayerItem } from "../ui/player_item";
 import keyboard from "./keyboard";
+import { GlobalLogger, Logger } from "../logger";
+import { Parser as MathEvalParser } from "../third_party/expr_eval";
 
 interface State {
 	debugEnabled: boolean;
 	checkerEnabled: boolean;
 	menuPage: number;
-	activeButtons: DebugButton[];
 	activeButtonCallbacks: LuaTable<number, UIButtonCallback | undefined>;
+	buttonsFilter: string;
 }
 
 const BUTTONS_COUNT = 10;
@@ -25,13 +27,14 @@ export class UIDebugMenu {
 		debugEnabled: false,
 		checkerEnabled: false,
 		menuPage: 0,
-		activeButtons: [],
 		activeButtonCallbacks: new LuaTable(),
+		buttonsFilter: "",
 	}));
 
 	private toggle: UIItem;
 	private debugMenu: UIPlayerItem;
 	private checker: UIPlayerItem;
+	private logger = new Logger(UIDebugMenu.name);
 
 	private registeredButtons: DebugButton[] = [];
 
@@ -53,6 +56,15 @@ export class UIDebugMenu {
 		this.debugMenu.setCallback("open_search", (player) => {
 			this.openSearch(player);
 		});
+		this.debugMenu.setCallback("filter_clear", (player) => {
+			const filter = this.state.get(player, "buttonsFilter");
+			const parser = new MathEvalParser();
+			const expr = parser.parse(filter);
+			GlobalLogger.warn(`Evaluation result is: ${expr.evaluate()}`);
+
+			this.setSearchHelp(true, player);
+			this.updateSearch("", player);
+		});
 
 		this.checker = new UIPlayerItem("debug_checker", {
 			show: false,
@@ -63,29 +75,47 @@ export class UIDebugMenu {
 
 		this.initializeButtons();
 		this.initializeButtonCallback();
-		this.setSearchClue("click to search...");
+		this.setSearchHelp(true);
 
-		log("Initialized Debug menu");
+		this.logger.log("Initialized Debug menu", { color: "00FF00" });
 	}
 
 	private openSearch(player: number) {
-		log("Calling debug search")
-		
-		keyboard.show((player, text, finished) => {
-			this.updateSearch(text, finished, player);
+		this.logger.log("Calling debug search", { color: "9D00FF" });
 
-			if (finished) this.closeSearch(player);
-		}, player);
+		this.setSearchHelp(false, player);
+		const filter = this.state.get(player, "buttonsFilter");
+		keyboard.show(
+			(player, text, finished) => {
+				if (finished) return;
+
+				const suggestions = this.updateSearch(text, player);
+
+				if (text.length === 0) {
+					this.setSearchHelp(true, player);
+				} else {
+					this.setSearchHelp(false, player);
+				}
+
+				return { suggestions };
+			},
+			player,
+			{ initialText: filter, maxSymbols: 20 },
+		);
 	}
 
-	private updateSearch(text: string, finished: boolean, player: number) {}
-
-	private closeSearch(player: number) {
-		this.setSearchClue("click to search...");
+	private updateSearch(text: string, player: number): string[] {
+		this.state.set(player, "buttonsFilter", text);
+		this.debugMenu.setText("filter_input", text, player);
+		return this.updateButtonsLayout(player);
 	}
 
-	private setSearchClue(text: string) {
-		this.debugMenu.setText("search_help_txt", text);
+	private setSearchHelp(show: boolean, player?: number) {
+		this.debugMenu.setText(
+			"search_help_txt",
+			show ? "click to search..." : "",
+			player,
+		);
 	}
 
 	private createButton(button: DebugButton) {
@@ -101,11 +131,15 @@ export class UIDebugMenu {
 					name: `Sample button ${index}`,
 					callback: () => {
 						if (DEBUG) {
-							log(`Hi from sample button ${index} in debug mode`);
+							this.logger.log(`Hi from sample button ${index} in debug mode`, {
+								color: "00FF00",
+							});
 							return;
 						}
 
-						log(`Hi from sample button ${index}`);
+						this.logger.log(`Hi from sample button ${index}`, {
+							color: "00FF00",
+						});
 					},
 				});
 				this.updateButtonsLayout(player);
@@ -128,17 +162,17 @@ export class UIDebugMenu {
 				const callbacks = this.state.get(player, "activeButtonCallbacks");
 
 				const callback = callbacks.get(index);
-				// log(
-				// 	`Getting callback for ${callbacks} with ${index} and got ${callback}`,
-				// );
 				if (callback !== undefined) callback(player);
 			});
 		}
 	}
 
-	private updateButtonsLayout(player: number) {
+	private updateButtonsLayout(player: number): string[] {
 		const page = this.state.get(player, "menuPage");
-		const activeButtons = this.state.get(player, "activeButtons");
+		const buttonsFilter = this.state.get(player, "buttonsFilter");
+		const activeButtons = this.registeredButtons.filter((value) => {
+			return value.name.includes(buttonsFilter);
+		});
 		const callbacks = this.state.get(player, "activeButtonCallbacks");
 
 		const showLastPageButton = page > 0;
@@ -146,7 +180,7 @@ export class UIDebugMenu {
 
 		const buttonsOffset = page * BUTTONS_COUNT;
 		const buttonsCount = math.min(
-			this.registeredButtons.length - buttonsOffset,
+			activeButtons.length - buttonsOffset,
 			BUTTONS_COUNT,
 		);
 
@@ -162,7 +196,7 @@ export class UIDebugMenu {
 			buttonsOffset + buttonsCount > i;
 			i++, t++
 		) {
-			const button = this.registeredButtons[i];
+			const button = activeButtons[i];
 
 			// log(`Setting callback for ${callbacks} with ${i}`);
 			callbacks.set(t, button.callback);
@@ -177,31 +211,24 @@ export class UIDebugMenu {
 		//		export_name: "icon_modifier_48",
 		//	});
 		//}
+
+		return activeButtons.map((value) => {
+			return value.name;
+		});
 	}
 
 	public toggleDebugMenu(player: number) {
 		const enabled = this.state.get(player, "debugEnabled");
-
-		// Update layout first
-		// Events may have some delays, so user accidentally may see unfinished buttons animation
-		// Update only when menu is about to show on user screen
-		if (!enabled) {
-			this.updateButtonsLayout(player);
-			//this.update();
-		}
+		if (!enabled) this.updateButtonsLayout(player);
 
 		// Update visibility
 		const animation = enabled ? "hide" : "show";
-		if (DEBUG)
-			log(
-				`Set debug menu state for ${player} to ${animation} at ${server.tick}`,
-			);
+		this.logger.log(
+			`Set debug menu state for ${player} to ${animation} at ${server.tick}`,
+		);
 
 		this.state.set(player, "debugEnabled", !enabled);
 		this.debugMenu.playAnimation(animation, player);
-
-		// Flush update for main animation
-		//this.update();
 	}
 
 	public toggleScreenChecker(player: number) {
@@ -213,9 +240,7 @@ export class UIDebugMenu {
 	}
 
 	public update() {
-		// Show toggle for everyone
 		this.toggle.update();
-
 		this.debugMenu.update();
 		this.checker?.update();
 	}

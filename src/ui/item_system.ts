@@ -43,7 +43,7 @@ export class UIItemSystem {
 	readonly id = this.createId();
 
 	/** Map object with listeners registered by object */
-	private buttonListeners: LuaTable<string, any> = new LuaTable();
+	private buttonEvents: LuaTable<string, any> = new LuaTable();
 
 	changed = false;
 
@@ -67,9 +67,9 @@ export class UIItemSystem {
 	}
 
 	private debugLog(data: any) {
-		log("--------------------------");
+		GlobalLogger.log("--------------------------");
 		logTable(data);
-		log("--------------------------");
+		GlobalLogger.log("--------------------------");
 	}
 
 	protected makeDirty() {
@@ -78,10 +78,8 @@ export class UIItemSystem {
 
 	public update(data: any, deferred: boolean = true) {
 		if (DEBUG) {
-			this.logger.trace(
-				`Updating id ${this.id} at tick ${server.tick}`,
-			);
-			// this.debugLog(data);
+			this.logger.trace(`Updating id ${this.id} at tick ${server.tick}`);
+			this.debugLog(data);
 		}
 
 		Events.send("updateUIItem", data, deferred);
@@ -105,9 +103,9 @@ export class UIItemSystem {
 		};
 
 		// Buttons
-		if (!this.buttonListeners.isEmpty()) {
+		if (!this.buttonEvents.isEmpty()) {
 			const buttonListeners = [];
-			for (const [_, listener] of this.buttonListeners) {
+			for (const [_, listener] of this.buttonEvents) {
 				buttonListeners.push(listener);
 			}
 
@@ -124,23 +122,31 @@ export class UIItemSystem {
 			);
 		}
 
-		const existingCallback = this.buttonListeners.get(binding);
-		if (existingCallback === callback) {
-			// Trying to register the same callback, exit
-			return;
-		}
-
 		const mapping = UIItemSystem.Buttons.get(this.id);
 		if (mapping === undefined) return;
 
-		const id = this.createButtonId();
-		this.buttonListeners.set(binding, {
-			binding,
-			client_input_value: id,
-		});
-		mapping.set(id, callback);
+		const existingEvent = this.buttonEvents.get(binding);
+		if (existingEvent !== undefined) {
+			const id = existingEvent.client_input_value;
+			if (mapping.get(id) === callback) {
+				// Trying to register the same callback, exit
+				return;
+			}
+		}
 
-		this.makeDirty();
+		let id: number;
+		if (existingEvent !== undefined) {
+			id = existingEvent.client_input_value;
+		} else {
+			id = this.createButtonId();
+			this.buttonEvents.set(binding, {
+				binding,
+				client_input_value: id,
+			});
+			this.makeDirty();
+		}
+		
+		mapping.set(id, callback);
 	}
 
 	public static updateInput(

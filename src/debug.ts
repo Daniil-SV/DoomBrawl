@@ -1,5 +1,7 @@
+import { GlobalLogger } from "./logger";
+
 export function logTableType(obj: object, indent = 0): void {
-	log(`${" ".repeat(indent)}{`);
+	GlobalLogger.log(`${" ".repeat(indent)}{`);
 
 	for (const [key, value] of Object.entries(obj)) {
 		const type = Array.isArray(value)
@@ -8,15 +10,15 @@ export function logTableType(obj: object, indent = 0): void {
 				? "null"
 				: typeof value;
 
-		log(`${" ".repeat(indent + 1)}${key}: ${type}`);
+		GlobalLogger.log(`${" ".repeat(indent + 1)}${key}: ${type}`);
 
 		if (value !== null && typeof value === "object") {
-			log(`${" ".repeat(indent + 1)}${key}: ${type}`);
+			GlobalLogger.log(`${" ".repeat(indent + 1)}${key}: ${type}`);
 			logTableType(value, indent + 3);
 		}
 	}
 
-	log(`${" ".repeat(indent)}}`);
+	GlobalLogger.log(`${" ".repeat(indent)}}`);
 }
 
 function gatherTableLog(obj: object, indent = 0, result: string = ""): string {
@@ -37,5 +39,11 @@ function gatherTableLog(obj: object, indent = 0, result: string = ""): string {
 
 export function logTable(obj: object): void {
 	const info = gatherTableLog(obj);
-	log(info);
+
+	const chunkSize = 25;
+	const lines = info.split("\n");
+
+	for (let i = 0; i < lines.length; i += chunkSize) {
+		log(lines.slice(i, i + chunkSize).join("\n"));
+	}
 }

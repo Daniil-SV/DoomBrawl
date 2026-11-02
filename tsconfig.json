@@ -24,7 +24,16 @@
         "luaLibImport": "require-minimal",
         "luaPlugins": [
             {
-                "name": "@gwigz/tstl-bundle-flatten"
+                "name": "@gwigz/tstl-bundle-flatten",
+                "globals": {
+                    "DEBUG": {
+                        "env": "DEBUG",
+                        "defaultValue": false,
+                    }
+                },
+                // "shake": true,
+                // "shakeClassFunctions": true,
+                "rootGlobals": ["tick"]
             }
         ],
         "noImplicitSelf": true
