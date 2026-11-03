@@ -15,7 +15,8 @@
         ],
         "strict": true,
         "skipLibCheck": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "noEmitOnError": true
     },
     "tstl": {
         "luaTarget": "Luau",
@@ -33,7 +34,9 @@
                 },
                 // "shake": true,
                 // "shakeClassFunctions": true,
-                "rootGlobals": ["tick"]
+                "rootGlobals": [
+                    "tick"
+                ]
             }
         ],
         "noImplicitSelf": true

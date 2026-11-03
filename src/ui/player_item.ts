@@ -1,10 +1,9 @@
-import { GlobalLogger } from "../logger";
 import { PlayerState } from "../state/player";
 import { UIItem, type UIItemOptions } from "./item";
 import {
-	UIItemSystem,
-	UIItemInstance,
 	type UIButtonCallback,
+	UIItemInstance,
+	UIItemSystem,
 } from "./item_system";
 
 interface UIPlayerItemState {

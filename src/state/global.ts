@@ -6,19 +6,12 @@ class GlobalState {
 	public ui: UISystem = new UISystem();
 	public tickClock: number = 0;
 
-	private updateTime() {
-		
-
-		
-	}
-
 	public update() {
-		this.tickClock = os.clock()
-		
-		this.updateTime();
-		Events.update();
+		this.tickClock = os.clock();
 
+		Events.update();
 		this.ui.update();
+		this.ui.analytic.currentTickTime = os.clock() - this.tickClock;
 
 		Events.pushEvents();
 	}

@@ -8,7 +8,7 @@
     "build:dev": "pnpx cross-env DEBUG=true pnpm build",
     "transpile": "pnpx typescript-to-lua -p tsconfig.json",
     "optimize": "darklua process dist/doomBrawl.luau dist/doomBrawlOptimized.luau",
-    "dev": "pnpx typescript-to-lua --watch",
+    "dev": "pnpx cross-env DEBUG=true pnpx typescript-to-lua --watch",
     "lint": "biome check --fix --unsafe",
     "validate:toml": "node scripts/validate_toml.mjs"
   },

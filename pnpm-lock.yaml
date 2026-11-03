@@ -171,7 +171,7 @@ importers:
         version: 2.6.2
       '@gwigz/tstl-bundle-flatten':
         specifier: github:Daniil-SV/tstl-bundle-flatten#build
-        version: https://codeload.github.com/Daniil-SV/tstl-bundle-flatten/tar.gz/0ab88b39c55b1db26b28a1f22cd6a51e41da4e32(typescript-to-lua@1.37.1(typescript@6.0.3))
+        version: https://codeload.github.com/Daniil-SV/tstl-bundle-flatten/tar.gz/91ac13e11551d525c317262571c8a694dbd73cd5(typescript-to-lua@1.37.1(typescript@6.0.3))
       '@typescript-to-lua/language-extensions':
         specifier: ^1.19.0
         version: 1.19.0
@@ -262,8 +262,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@gwigz/tstl-bundle-flatten@https://codeload.github.com/Daniil-SV/tstl-bundle-flatten/tar.gz/0ab88b39c55b1db26b28a1f22cd6a51e41da4e32':
-    resolution: {gitHosted: true, integrity: sha512-IPbATA+7FJKhcNbxBzwT7GCNNSNXS+FjTnvrzl2ziIw34e6D4gfpdtygNhhIehopVQtDRfolOKZxkIodRWElww==, tarball: https://codeload.github.com/Daniil-SV/tstl-bundle-flatten/tar.gz/0ab88b39c55b1db26b28a1f22cd6a51e41da4e32}
+  '@gwigz/tstl-bundle-flatten@https://codeload.github.com/Daniil-SV/tstl-bundle-flatten/tar.gz/91ac13e11551d525c317262571c8a694dbd73cd5':
+    resolution: {gitHosted: true, integrity: sha512-1XrZZ1A4lIMZzZgp3vEAhip0EiP0H2pWMdyKxEBm3hUn4RUSWObUuQSey2htqTO8i8HyE07dJ1cpMu6RhsbG4Q==, tarball: https://codeload.github.com/Daniil-SV/tstl-bundle-flatten/tar.gz/91ac13e11551d525c317262571c8a694dbd73cd5}
     version: 1.4.0
     peerDependencies:
       darklua-wasm: '>=0.1.0'
@@ -401,7 +401,7 @@ snapshots:
   '@biomejs/cli-win32-x64@2.6.2':
     optional: true
 
-  '@gwigz/tstl-bundle-flatten@https://codeload.github.com/Daniil-SV/tstl-bundle-flatten/tar.gz/0ab88b39c55b1db26b28a1f22cd6a51e41da4e32(typescript-to-lua@1.37.1(typescript@6.0.3))':
+  '@gwigz/tstl-bundle-flatten@https://codeload.github.com/Daniil-SV/tstl-bundle-flatten/tar.gz/91ac13e11551d525c317262571c8a694dbd73cd5(typescript-to-lua@1.37.1(typescript@6.0.3))':
     dependencies:
       typescript-to-lua: 1.37.1(typescript@6.0.3)
 

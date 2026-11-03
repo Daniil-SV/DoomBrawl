@@ -3,10 +3,10 @@ priority = 5
 
 sc_file_source = "ClientFile"
 sc_file = "sc/effects_brawler_stella.sc"
-container_left_right = "debug_analytic"
+container_top_left = "debug_analytic"
 
 [bindings]
-self = "left_right"
+self = "top_left"
 
 title = {parent_binding="self", path="title_txt"}
 

@@ -1,12 +1,12 @@
-import { UIAnalytic } from "../componens/analytic";
-import { UIBottomBar } from "../componens/bottom";
-import { UIDebugMenu } from "../componens/debug";
-import keyboard from "../componens/keyboard";
+import { UIAnalytic } from "../components/analytic";
+import { UIBottomBar } from "../components/bottom";
+import { UIDebugMenu } from "../components/debug";
+import keyboard from "../components/keyboard";
 import { UIItemSystem } from "./item_system";
 
 export class UISystem {
 	debug?: UIDebugMenu;
-	// analytic = new UIAnalytic();
+	analytic = new UIAnalytic();
 	bottom = new UIBottomBar();
 
 	constructor() {
@@ -24,8 +24,8 @@ export class UISystem {
 		}
 
 		this.bottom.update();
-		
+
 		keyboard.update();
-		// this.analytic.update();
+		this.analytic.update();
 	}
 }
